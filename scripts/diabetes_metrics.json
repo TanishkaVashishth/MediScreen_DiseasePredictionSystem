@@ -1,0 +1,18 @@
+{
+  "disease": "Diabetes",
+  "dataset": "Pima Indians Diabetes",
+  "samples": 768,
+  "features": 8,
+  "accuracy": 0.6623,
+  "precision": 0.6034,
+  "recall": 0.5469,
+  "f1_score": 0.5738,
+  "auc_roc": 0.7246,
+  "top_features": {
+    "Glucose": 0.2776,
+    "BMI": 0.1625,
+    "BloodPressure": 0.1216,
+    "DiabetesPedigreeFunction": 0.1211,
+    "SkinThickness": 0.1023
+  }
+}

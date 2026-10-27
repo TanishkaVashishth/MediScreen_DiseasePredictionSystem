@@ -1,0 +1,18 @@
+{
+  "disease": "Liver Disease",
+  "dataset": "UCI Indian Liver Patient Disease (ILPD)",
+  "samples": 583,
+  "features": 10,
+  "accuracy": 0.9573,
+  "precision": 0.963,
+  "recall": 0.975,
+  "f1_score": 0.9689,
+  "auc_roc": 0.9963,
+  "top_features": {
+    "Total_Bilirubin": 0.3746,
+    "Direct_Bilirubin": 0.1625,
+    "Alamine_Aminotransferase": 0.1236,
+    "Aspartate_Aminotransferase": 0.1195,
+    "Age": 0.0543
+  }
+}

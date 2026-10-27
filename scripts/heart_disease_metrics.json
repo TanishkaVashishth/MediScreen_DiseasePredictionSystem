@@ -1,0 +1,18 @@
+{
+  "disease": "Heart Disease",
+  "dataset": "UCI Cleveland Heart Disease",
+  "samples": 303,
+  "features": 13,
+  "accuracy": 0.9344,
+  "precision": 0.9412,
+  "recall": 0.8421,
+  "f1_score": 0.8889,
+  "auc_roc": 0.9712,
+  "top_features": {
+    "oldpeak": 0.1549,
+    "thalach": 0.1444,
+    "ca": 0.138,
+    "cp": 0.1071,
+    "age": 0.102
+  }
+}

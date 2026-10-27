@@ -1,0 +1,18 @@
+{
+  "disease": "Breast Cancer",
+  "dataset": "UCI Breast Cancer Wisconsin",
+  "samples": 569,
+  "features": 8,
+  "accuracy": 1.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1_score": 1.0,
+  "auc_roc": 1.0,
+  "top_features": {
+    "concave points_mean": 0.3076,
+    "perimeter_mean": 0.1681,
+    "radius_mean": 0.1647,
+    "area_mean": 0.1503,
+    "concavity_mean": 0.098
+  }
+}

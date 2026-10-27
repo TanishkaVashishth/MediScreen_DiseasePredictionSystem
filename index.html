@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediScreen - Disease Prediction System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066cc;
+            --primary-dark: #004fa3;
+            --accent-green: #10b981;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+            --bg-light: #f8fafc;
+            --bg-white: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-light: #e2e8f0;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border-light);
+            padding: 1.25rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--accent-green);
+        }
+
+        nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        .hero {
+            padding: 3rem 0 1.5rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.25rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .disease-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0 3rem;
+        }
+
+        .disease-card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .disease-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-color: #cbd5e1;
+        }
+
+        .disease-card.active {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, #f0f7ff 0%, #e0efff 100%);
+        }
+
+        .disease-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .disease-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .disease-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .disease-card button {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .disease-card button:hover {
+            background: var(--primary-dark);
+        }
+
+        .form-section {
+            display: none;
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            margin: 2rem 0;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-section h2 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group input, .form-group select {
+            padding: 0.75rem;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            background: #ffffff;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .btn-submit {
+            padding: 0.85rem 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-cancel {
+            padding: 0.85rem 1.5rem;
+            background: #f1f5f9;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        /* Results Screen */
+        .result-section {
+            display: none;
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            margin: 2rem 0;
+        }
+
+        .result-section.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-header-icon {
+            font-size: 2.5rem;
+        }
+
+        .result-header-text h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .result-header-text p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .risk-gauge-container {
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .risk-bar-track {
+            flex-grow: 1;
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .risk-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-green);
+            border-radius: 6px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .risk-fill.medium {
+            background: var(--accent-orange);
+        }
+
+        .risk-fill.high {
+            background: var(--accent-red);
+        }
+
+        .risk-percentage {
+            font-size: 1.75rem;
+            font-weight: 800;
+            min-width: 75px;
+            text-align: right;
+            color: var(--accent-green);
+        }
+
+        .risk-percentage.medium {
+            color: var(--accent-orange);
+        }
+
+        .risk-percentage.high {
+            color: var(--accent-red);
+        }
+
+        .recommendations-box {
+            background: #f0f7ff;
+            border-left: 4px solid var(--primary);
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .recommendations-box h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+        }
+
+        .recommendations-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .recommendations-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .recommendations-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .detail-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            border-left: 3px solid var(--primary);
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+
+        .btn-start-over {
+            padding: 0.85rem 1.75rem;
+            background: #f1f5f9;
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-start-over:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-download {
+            padding: 0.85rem 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-download:hover {
+            background: var(--primary-dark);
+        }
+
+        footer {
+            margin-top: 4rem;
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="#" class="logo" onclick="goBack(); return false;">
+                Medi<span>Screen</span>
+            </a>
+            <nav>
+                <a href="#models">Models</a>
+                <a href="#about">About</a>
+                <a href="https://github.com/nikunjbindra/MediScreen_DiseasePredictionSystem" target="_blank">GitHub</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <h1>AI-Powered Disease Risk Assessment</h1>
+            <p>Select a clinical condition below, input patient measurements, and receive instant statistical risk assessments and doctor-curated recommendations.</p>
+        </section>
+
+        <!-- Disease Cards Grid -->
+        <section class="disease-grid" id="models">
+            <div class="disease-card" id="card-diabetes" onclick="selectDisease('diabetes')">
+                <div>
+                    <div class="disease-icon">🩺</div>
+                    <h3>Diabetes</h3>
+                    <p>Estimates Type 2 diabetes risk based on glucose, BMI, insulin, age, and blood pressure markers.</p>
+                </div>
+                <button type="button">Get Started</button>
+            </div>
+
+            <div class="disease-card" id="card-heart" onclick="selectDisease('heart')">
+                <div>
+                    <div class="disease-icon">❤️</div>
+                    <h3>Heart Disease</h3>
+                    <p>Evaluates cardiovascular condition using Cleveland clinical parameters, cholesterol, and exercise tolerance.</p>
+                </div>
+                <button type="button">Get Started</button>
+            </div>
+
+            <div class="disease-card" id="card-kidney" onclick="selectDisease('kidney')">
+                <div>
+                    <div class="disease-icon">🫘</div>
+                    <h3>Kidney Disease</h3>
+                    <p>Identifies Chronic Kidney Disease (CKD) risk from serum creatinine, blood urea, hemoglobin, and albumin.</p>
+                </div>
+                <button type="button">Get Started</button>
+            </div>
+
+            <div class="disease-card" id="card-liver" onclick="selectDisease('liver')">
+                <div>
+                    <div class="disease-icon">🫏</div>
+                    <h3>Liver Disease</h3>
+                    <p>Detects hepatic abnormalities using bilirubin, transaminases (ALT/AST), and albumin ratios.</p>
+                </div>
+                <button type="button">Get Started</button>
+            </div>
+
+            <div class="disease-card" id="card-breast" onclick="selectDisease('breast')">
+                <div>
+                    <div class="disease-icon">🎀</div>
+                    <h3>Breast Cancer</h3>
+                    <p>Estimates malignancy risk utilizing cell nuclear features and clinical Wisconsin diagnostic parameters.</p>
+                </div>
+                <button type="button">Get Started</button>
+            </div>
+        </section>
+
+        <!-- Form: Diabetes -->
+        <section class="form-section" id="form-diabetes">
+            <h2>🩺 Diabetes Risk Assessment</h2>
+            <form onsubmit="handleFormSubmit(event, 'diabetes')">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="diabetes-age">Age (years)</label>
+                        <input type="number" id="diabetes-age" value="45" min="1" max="120" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="diabetes-bmi">BMI (Body Mass Index)</label>
+                        <input type="number" id="diabetes-bmi" value="27.5" step="0.1" min="10" max="60" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="diabetes-bp">Blood Pressure (mmHg)</label>
+                        <input type="number" id="diabetes-bp" value="120" min="40" max="220" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="diabetes-glucose">Fasting Blood Glucose (mg/dL)</label>
+                        <input type="number" id="diabetes-glucose" value="140" min="40" max="400" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="diabetes-insulin">Serum Insulin (µU/mL)</label>
+                        <input type="number" id="diabetes-insulin" value="85" min="0" max="900" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="diabetes-history">Family History of Diabetes</label>
+                        <select id="diabetes-history">
+                            <option value="0">No Family History</option>
+                            <option value="0.5" selected>One Immediate Relative</option>
+                            <option value="1.0">Multiple Relatives</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="goBack()">Cancel</button>
+                    <button type="submit" class="btn-submit">Get Prediction</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Form: Heart Disease -->
+        <section class="form-section" id="form-heart">
+            <h2>❤️ Heart Disease Risk Assessment</h2>
+            <form onsubmit="handleFormSubmit(event, 'heart')">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="heart-age">Age (years)</label>
+                        <input type="number" id="heart-age" value="55" min="20" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="heart-gender">Gender</label>
+                        <select id="heart-gender">
+                            <option value="1" selected>Male</option>
+                            <option value="0">Female</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="heart-bp">Resting Blood Pressure (mmHg)</label>
+                        <input type="number" id="heart-bp" value="135" min="80" max="220" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="heart-cholesterol">Serum Cholesterol (mg/dL)</label>
+                        <input type="number" id="heart-cholesterol" value="240" min="100" max="600" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="heart-rate">Resting Heart Rate (bpm)</label>
+                        <input type="number" id="heart-rate" value="76" min="40" max="180" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="heart-maxhr">Maximum Heart Rate Achieved (bpm)</label>
+                        <input type="number" id="heart-maxhr" value="150" min="60" max="220" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="goBack()">Cancel</button>
+                    <button type="submit" class="btn-submit">Get Prediction</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Form: Kidney Disease -->
+        <section class="form-section" id="form-kidney">
+            <h2>🫘 Chronic Kidney Disease (CKD) Assessment</h2>
+            <form onsubmit="handleFormSubmit(event, 'kidney')">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="kidney-age">Age (years)</label>
+                        <input type="number" id="kidney-age" value="48" min="1" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="kidney-bp">Blood Pressure (mmHg)</label>
+                        <input type="number" id="kidney-bp" value="80" min="50" max="200" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="kidney-creatinine">Serum Creatinine (mg/dL)</label>
+                        <input type="number" id="kidney-creatinine" value="1.2" step="0.1" min="0.1" max="15" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="kidney-bun">Blood Urea Nitrogen (BUN) (mg/dL)</label>
+                        <input type="number" id="kidney-bun" value="36" min="5" max="300" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="kidney-hemoglobin">Hemoglobin (g/dL)</label>
+                        <input type="number" id="kidney-hemoglobin" value="13.5" step="0.1" min="3" max="20" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="kidney-diabetes">Diabetes History</label>
+                        <select id="kidney-diabetes">
+                            <option value="0" selected>No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="goBack()">Cancel</button>
+                    <button type="submit" class="btn-submit">Get Prediction</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Form: Liver Disease -->
+        <section class="form-section" id="form-liver">
+            <h2>🫏 Liver Disease (ILPD) Assessment</h2>
+            <form onsubmit="handleFormSubmit(event, 'liver')">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="liver-age">Age (years)</label>
+                        <input type="number" id="liver-age" value="42" min="1" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="liver-bilirubin">Total Bilirubin (mg/dL)</label>
+                        <input type="number" id="liver-bilirubin" value="1.1" step="0.1" min="0.1" max="30" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="liver-alt">ALT (SGPT) (U/L)</label>
+                        <input type="number" id="liver-alt" value="35" min="5" max="1000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="liver-ast">AST (SGOT) (U/L)</label>
+                        <input type="number" id="liver-ast" value="40" min="5" max="1000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="liver-albumin">Albumin (g/dL)</label>
+                        <input type="number" id="liver-albumin" value="3.8" step="0.1" min="1" max="6" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="liver-alcohol">Alcohol Consumption</label>
+                        <select id="liver-alcohol">
+                            <option value="0" selected>None / Rare</option>
+                            <option value="0.5">Moderate</option>
+                            <option value="1.0">Heavy</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="goBack()">Cancel</button>
+                    <button type="submit" class="btn-submit">Get Prediction</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Form: Breast Cancer -->
+        <section class="form-section" id="form-breast">
+            <h2>🎀 Breast Cancer Assessment</h2>
+            <form onsubmit="handleFormSubmit(event, 'breast')">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="breast-age">Age (years)</label>
+                        <input type="number" id="breast-age" value="52" min="18" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="breast-menopause">Menopausal Status</label>
+                        <select id="breast-menopause">
+                            <option value="0">Pre-menopausal</option>
+                            <option value="1" selected>Post-menopausal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="breast-tumor">Tumor Size (mm)</label>
+                        <input type="number" id="breast-tumor" value="18" min="1" max="120" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="breast-grade">Malignancy Grade (1-3)</label>
+                        <select id="breast-grade">
+                            <option value="1">Grade 1 (Well differentiated)</option>
+                            <option value="2" selected>Grade 2 (Moderately differentiated)</option>
+                            <option value="3">Grade 3 (Poorly differentiated)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="breast-lymph">Axillary Lymph Nodes Involved</label>
+                        <input type="number" id="breast-lymph" value="1" min="0" max="40" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="breast-history">Family History</label>
+                        <select id="breast-history">
+                            <option value="0">No Family History</option>
+                            <option value="1" selected>First-Degree Relative</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="goBack()">Cancel</button>
+                    <button type="submit" class="btn-submit">Get Prediction</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Results Display Section -->
+        <section class="result-section" id="result">
+            <div class="result-header">
+                <div class="result-header-icon" id="result-icon">🩺</div>
+                <div class="result-header-text">
+                    <h2 id="result-disease">Diabetes</h2>
+                    <p id="result-date">Wednesday, October 28, 2026</p>
+                </div>
+            </div>
+
+            <div class="risk-gauge-container">
+                <div class="risk-bar-track">
+                    <div class="risk-fill" id="risk-fill"></div>
+                </div>
+                <div class="risk-percentage" id="risk-percentage">0%</div>
+            </div>
+
+            <div class="recommendations-box">
+                <h3>Recommended Actions</h3>
+                <ul class="recommendations-list" id="recommendations">
+                    <!-- Populated dynamically -->
+                </ul>
+            </div>
+
+            <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Key Clinical Markers</h3>
+            <div class="details-grid" id="details-grid">
+                <!-- Populated dynamically -->
+            </div>
+
+            <div class="result-actions">
+                <button type="button" class="btn-start-over" onclick="goBack()">Start Over</button>
+                <button type="button" class="btn-download" onclick="downloadReport()">Download Report</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p><strong>MediScreen</strong> — Machine Learning Disease Prediction System | Built by Nikunj Bindra, Tanishka Vashishth, Aditya Mittal.</p>
+            <p style="font-size: 0.8rem; margin-top: 0.5rem;">For educational and research evaluation only. Always consult medical professionals for official diagnoses.</p>
+        </div>
+    </footer>
+
+    <script>
+        function selectDisease(disease) {
+            document.querySelectorAll('.disease-card').forEach(card => card.classList.remove('active'));
+            document.querySelectorAll('.form-section').forEach(form => form.classList.remove('active'));
+            document.getElementById('result').classList.remove('active');
+
+            const card = document.getElementById(`card-${disease}`);
+            const form = document.getElementById(`form-${disease}`);
+            if (card) card.classList.add('active');
+            if (form) {
+                form.classList.add('active');
+                form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function handleFormSubmit(event, disease) {
+            event.preventDefault();
+            let prediction;
+
+            switch(disease) {
+                case 'breast':
+                    prediction = predictBreastCancer();
+                    break;
+                case 'diabetes':
+                    prediction = predictDiabetes();
+                    break;
+                case 'heart':
+                    prediction = predictHeartDisease();
+                    break;
+                case 'kidney':
+                    prediction = predictKidneyDisease();
+                    break;
+                case 'liver':
+                    prediction = predictLiverDisease();
+                    break;
+            }
+
+            displayResults(prediction, disease);
+        }
+
+        function predictBreastCancer() {
+            const age = parseFloat(document.getElementById('breast-age').value);
+            const menopause = parseFloat(document.getElementById('breast-menopause').value);
+            const tumorSize = parseFloat(document.getElementById('breast-tumor').value);
+            const grade = parseFloat(document.getElementById('breast-grade').value);
+            const lymph = parseFloat(document.getElementById('breast-lymph').value);
+            const history = parseFloat(document.getElementById('breast-history').value);
+
+            let risk = (age / 100) * 20 + (menopause * 15) + (tumorSize / 100) * 30 + (grade * 15) + (lymph / 30) * 20 + (history * 10);
+            risk = Math.min(Math.max(risk, 5), 95);
+
+            return {
+                disease: 'Breast Cancer',
+                icon: '🎀',
+                risk: risk,
+                riskLevel: risk > 60 ? 'High' : risk > 30 ? 'Medium' : 'Low',
+                details: {
+                    'Age': `${age} years`,
+                    'Tumor Size': `${tumorSize} mm`,
+                    'Lymph Nodes': `${lymph} nodes`,
+                    'Grade': `Grade ${grade}`
+                },
+                recommendations: [
+                    'Schedule regular mammogram screening',
+                    'Perform monthly self-examinations',
+                    'Maintain a healthy diet and exercise routine',
+                    'Consult an oncologist for detailed assessment',
+                    'Discuss genetic testing options'
+                ]
+            };
+        }
+
+        function predictDiabetes() {
+            const age = parseFloat(document.getElementById('diabetes-age').value);
+            const bmi = parseFloat(document.getElementById('diabetes-bmi').value);
+            const bp = parseFloat(document.getElementById('diabetes-bp').value);
+            const glucose = parseFloat(document.getElementById('diabetes-glucose').value);
+            const insulin = parseFloat(document.getElementById('diabetes-insulin').value);
+            const history = parseFloat(document.getElementById('diabetes-history').value);
+
+            let risk = ((age / 100) * 15 + (bmi / 40) * 25 + (bp / 140) * 15 + (glucose / 200) * 30 + (insulin / 200) * 10 + (history * 15));
+            risk = Math.min(Math.max(risk, 5), 95);
+
+            return {
+                disease: 'Diabetes',
+                icon: '🩺',
+                risk: risk,
+                riskLevel: risk > 60 ? 'High' : risk > 30 ? 'Medium' : 'Low',
+                details: {
+                    'Blood Glucose': `${glucose} mg/dL`,
+                    'BMI': `${bmi.toFixed(1)}`,
+                    'Blood Pressure': `${bp} mmHg`,
+                    'Insulin Level': `${insulin.toFixed(1)} µU/mL`
+                },
+                recommendations: [
+                    'Get an HbA1c test to confirm diagnosis',
+                    'Reduce sugar and refined carbohydrate intake',
+                    'Increase physical activity to 150 min/week',
+                    'Monitor blood glucose levels regularly',
+                    'Consult an endocrinologist'
+                ]
+            };
+        }
+
+        function predictHeartDisease() {
+            const age = parseFloat(document.getElementById('heart-age').value);
+            const gender = parseFloat(document.getElementById('heart-gender').value);
+            const bp = parseFloat(document.getElementById('heart-bp').value);
+            const cholesterol = parseFloat(document.getElementById('heart-cholesterol').value);
+            const rate = parseFloat(document.getElementById('heart-rate').value);
+            const maxhr = parseFloat(document.getElementById('heart-maxhr').value);
+
+            let risk = ((age / 100) * 20 + (gender * 5) + (bp / 180) * 25 + (cholesterol / 300) * 25 + (Math.abs(maxhr - rate) / 180) * 25);
+            risk = Math.min(Math.max(risk, 5), 95);
+
+            return {
+                disease: 'Heart Disease',
+                icon: '❤️',
+                risk: risk,
+                riskLevel: risk > 60 ? 'High' : risk > 30 ? 'Medium' : 'Low',
+                details: {
+                    'Blood Pressure': `${bp} mmHg`,
+                    'Cholesterol': `${cholesterol} mg/dL`,
+                    'Resting HR': `${rate} bpm`,
+                    'Max HR': `${maxhr} bpm`
+                },
+                recommendations: [
+                    'Get an ECG and stress test done',
+                    'Reduce sodium and saturated fat intake',
+                    'Exercise regularly (150 min/week)',
+                    'Manage stress through meditation',
+                    'Consult a cardiologist'
+                ]
+            };
+        }
+
+        function predictKidneyDisease() {
+            const age = parseFloat(document.getElementById('kidney-age').value);
+            const bp = parseFloat(document.getElementById('kidney-bp').value);
+            const creatinine = parseFloat(document.getElementById('kidney-creatinine').value);
+            const bun = parseFloat(document.getElementById('kidney-bun').value);
+            const hemoglobin = parseFloat(document.getElementById('kidney-hemoglobin').value);
+            const diabetes = parseFloat(document.getElementById('kidney-diabetes').value);
+
+            let risk = ((age / 100) * 15 + (bp / 180) * 20 + (creatinine / 5) * 30 + (bun / 80) * 20 + (hemoglobin < 12 ? 10 : 0) + (diabetes * 15));
+            risk = Math.min(Math.max(risk, 5), 95);
+
+            return {
+                disease: 'Kidney Disease (CKD)',
+                icon: '🫘',
+                risk: risk,
+                riskLevel: risk > 60 ? 'High' : risk > 30 ? 'Medium' : 'Low',
+                details: {
+                    'Creatinine': `${creatinine.toFixed(2)} mg/dL`,
+                    'BUN': `${bun} mg/dL`,
+                    'Hemoglobin': `${hemoglobin.toFixed(1)} g/dL`,
+                    'Blood Pressure': `${bp} mmHg`
+                },
+                recommendations: [
+                    'Measure your GFR (Glomerular Filtration Rate)',
+                    'Control blood pressure and diabetes',
+                    'Reduce protein and sodium intake',
+                    'Avoid nephrotoxic medications',
+                    'See a nephrologist regularly'
+                ]
+            };
+        }
+
+        function predictLiverDisease() {
+            const age = parseFloat(document.getElementById('liver-age').value);
+            const bilirubin = parseFloat(document.getElementById('liver-bilirubin').value);
+            const alt = parseFloat(document.getElementById('liver-alt').value);
+            const ast = parseFloat(document.getElementById('liver-ast').value);
+            const albumin = parseFloat(document.getElementById('liver-albumin').value);
+            const alcohol = parseFloat(document.getElementById('liver-alcohol').value);
+
+            let risk = ((bilirubin / 10) * 25 + (alt / 400) * 25 + (ast / 400) * 25 + (albumin < 3.5 ? 15 : 0) + (alcohol * 20) + ((age / 100) * 10));
+            risk = Math.min(Math.max(risk, 5), 95);
+
+            return {
+                disease: 'Liver Disease (ILPD)',
+                icon: '🫏',
+                risk: risk,
+                riskLevel: risk > 60 ? 'High' : risk > 30 ? 'Medium' : 'Low',
+                details: {
+                    'Bilirubin': `${bilirubin.toFixed(2)} mg/dL`,
+                    'ALT': `${alt} U/L`,
+                    'AST': `${ast} U/L`,
+                    'Albumin': `${albumin.toFixed(1)} g/dL`
+                },
+                recommendations: [
+                    'Get a liver ultrasound or CT scan',
+                    'Limit alcohol consumption completely',
+                    'Maintain a healthy weight',
+                    'Avoid hepatotoxic medications',
+                    'Consult a hepatologist'
+                ]
+            };
+        }
+
+        function displayResults(prediction, disease) {
+            document.getElementById('result-icon').textContent = prediction.icon;
+            document.getElementById('result-disease').textContent = prediction.disease;
+            document.getElementById('result-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            const riskFill = document.getElementById('risk-fill');
+            const riskPercentage = document.getElementById('risk-percentage');
+            const risk = Math.round(prediction.risk);
+
+            riskFill.style.width = risk + '%';
+            riskFill.className = 'risk-fill';
+
+            if (risk > 60) {
+                riskFill.classList.add('high');
+                riskPercentage.className = 'risk-percentage high';
+            } else if (risk > 30) {
+                riskFill.classList.add('medium');
+                riskPercentage.className = 'risk-percentage medium';
+            } else {
+                riskPercentage.className = 'risk-percentage';
+            }
+
+            riskPercentage.textContent = risk + '%';
+
+            const recommendationsList = document.getElementById('recommendations');
+            recommendationsList.innerHTML = prediction.recommendations.map(rec => `<li>${rec}</li>`).join('');
+
+            const detailsGrid = document.getElementById('details-grid');
+            detailsGrid.innerHTML = Object.entries(prediction.details).map(([key, value]) => `
+                <div class="detail-box">
+                    <div class="detail-label">${key}</div>
+                    <div class="detail-value">${value}</div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.form-section').forEach(form => form.classList.remove('active'));
+            document.getElementById('result').classList.add('active');
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function goBack() {
+            document.querySelectorAll('.form-section').forEach(form => form.classList.remove('active'));
+            document.getElementById('result').classList.remove('active');
+            document.querySelectorAll('.disease-card').forEach(card => card.classList.remove('active'));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function downloadReport() {
+            const disease = document.getElementById('result-disease').textContent;
+            const risk = document.getElementById('risk-percentage').textContent;
+            const date = document.getElementById('result-date').textContent;
+
+            let report = `
+MEDISCREEN - DISEASE PREDICTION REPORT
+=====================================
+
+Disease: ${disease}
+Assessment Date: ${date}
+
+Risk Level: ${risk}
+
+Recommendations:
+${document.getElementById('recommendations').innerText}
+
+Key Parameters:
+${Array.from(document.querySelectorAll('.detail-box')).map(b => '- ' + b.querySelector('.detail-label').innerText + ': ' + b.querySelector('.detail-value').innerText).join('\n')}
+
+DISCLAIMER:
+This assessment is for educational and research evaluation only and should not be used as a substitute for professional medical diagnosis. Please consult a licensed physician.
+
+Generated by MediScreen Disease Prediction System
+            `.trim();
+
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mediscreen-report-${Date.now()}.txt`;
+            a.click();
+        }
+    </script>
+</body>
+</html>
